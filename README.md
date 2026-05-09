@@ -1,16 +1,18 @@
 # ClaudeOps
 
-A Claude Code workspace for DevOps engineers who ship entire products alone.
+> A Claude Code workspace built for the solo DevOps engineer who somehow has to ship the whole damn product.
 
-52 skills across 10 domains. Skills load on-demand by keyword — no token overhead unless you need them. DevOps is the primary domain. Everything else (auth, payments, frontend, AI, marketing) exists because a solo DevOps engineer building a product needs all of it.
+52 skills. 10 domains. They load on-demand by keyword — no wasted tokens, no manual wrangling. DevOps is the heart of it, but everything else is here too (auth, payments, frontend, AI, marketing) because *you* are the whole team.
 
 ---
 
 ## How It Works
 
-**`claude.md`** loads every session and defines your identity, default stacks, and skill routing table.
+Drop a request. The right skill loads. You never think about it.
 
-**Skills** live in `skills/` and load automatically when trigger keywords appear in your request. You never manually invoke them.
+**`claude.md`** wires everything together — your identity, your stacks, and a routing table that maps keywords to skills automatically.
+
+**Skills** live in `skills/` and snap in when trigger words hit:
 
 ```
 "set up Terraform for AWS"     → devops/infra loads
@@ -20,23 +22,23 @@ A Claude Code workspace for DevOps engineers who ship entire products alone.
 "I'm done"                     → workflow/verification loads
 ```
 
-Each skill is a single focused `.md` file under 250 lines. Code over prose. No fluff.
+Each skill is a tight `.md` file under 250 lines. Code over prose. Zero fluff.
 
 ---
 
-## Structure
+## What's Inside
 
 ```
 ClaudeOps/
 ├── claude.md                    ← Root config (always loaded)
-├── SKILLS_INDEX.md              ← Full skill reference with all triggers
+├── SKILLS_INDEX.md              ← Every skill, every trigger
 ├── projects/
 │   └── _template/claude.md     ← Copy this for every new project
 └── skills/
-    ├── devops/     12 skills    ← Primary domain
+    ├── devops/     12 skills    ← The main event
     ├── dev/        17 skills
     ├── frontend/    6 skills
-    ├── workflow/    3 skills    ← Process enforcement
+    ├── workflow/    3 skills    ← These enforce the hard rules
     ├── ai/          4 skills
     ├── ui-ux/       3 skills
     ├── marketing/   3 skills
@@ -48,9 +50,10 @@ ClaudeOps/
 
 ---
 
-## Skills
+## The Skills
 
-### DevOps (12)
+### DevOps (12) — your home turf
+
 | Skill | Triggers |
 |-------|----------|
 | `devops/infra` | terraform, IaC, provision, cloudformation |
@@ -72,17 +75,18 @@ ClaudeOps/
 ### Frontend (6)
 `nextjs` · `react` · `design-system` · `performance` · `accessibility` · `state`
 
-### Workflow (3) — the ones that matter most
+### Workflow (3) — the ones that keep you honest
+
 | Skill | What it enforces |
 |-------|-----------------|
 | `workflow/planning` | No code without a written plan. Forces exact file paths, verification step, risk assessment. |
-| `workflow/debugging` | 4-phase process: investigate → pattern → hypothesis → fix. No guessing. |
-| `workflow/verification` | FORBIDDEN to claim done without running the check. Checklists by change type. |
+| `workflow/debugging` | 4-phase: investigate → pattern → hypothesis → fix. No vibes-based guessing. |
+| `workflow/verification` | Can't claim done without running the check. Checklists by change type. |
 
 ### AI (4)
 `prompting` · `agents` · `context-engineering` · `evaluation`
 
-### Supporting
+### Everything else
 `analytics/product` · `analytics/errors` · `marketing/copywriting` · `marketing/seo` · `marketing/campaigns` · `mobile/expo` · `ui-ux/components` · `ui-ux/motion` · `ui-ux/prototyping`
 
 ---
@@ -103,45 +107,36 @@ ClaudeOps/
 
 ---
 
-## Quick Start
+## Get Going
 
-**1. Clone and point Claude at it**
+**1. Clone it**
 ```bash
 git clone https://github/.com/3bdo7amouda/ClaudeOps
 ```
-In Claude Code settings, set your workspace path to this directory.
+Point Claude Code's workspace path at this directory.
 
-**2. Start a new project**
+**2. Start a project**
 ```bash
 cp projects/_template/claude.md my-project/CLAUDE.md
 # Fill in: stack, environments, active skills
 ```
 
-**3. Set up product context** (for marketing skills)
+**3. Set up product context** (marketing skills need this)
 
-Just say: *"set up project context"* — Claude runs the interview and writes `.agents/project-context.md`. All marketing skills read it automatically from then on.
+Just say: *"set up project context"* — Claude runs an interview and writes `.agents/project-context.md`. Every marketing skill picks it up automatically from there.
 
-**4. Work normally**
+**4. Just work**
 
-Trigger keywords in your requests load the right skill automatically. Check `SKILLS_INDEX.md` if you want to see all triggers.
-
----
-
-## What Makes Each Skill Different
-
-Skills aren't just tips — they're enforced workflows:
-
-- **Iron Law** — absolute rule that can't be rationalized away
-- **FORBIDDEN** — hard constraints in caps (from Remotion's pattern)
-- **Red Flags** — exact internal monologue patterns that signal you're about to make a mistake
-- **Gotchas** — non-obvious production failure modes
-- **Related Skills** — when to switch to another skill mid-task
+Keywords in your requests pull in the right skill. Peek at `SKILLS_INDEX.md` if you want to see everything.
 
 ---
 
-## Skill Quality Constraints
+## Why Skills Hit Different
 
-- Every skill under 250 lines
-- Code blocks over prose
-- No duplication across skills
-- Triggers are conditions only — never process summaries
+These aren't tips or suggestions. They're enforced workflows with actual teeth:
+
+- **Iron Law** — the one rule you can't rationalize around
+- **FORBIDDEN** — hard constraints, in caps, no debate
+- **Red Flags** — the exact thought patterns that mean you're about to mess up
+- **Gotchas** — the non-obvious ways this blows up in production
+- **Related Skills** — when to hand off to a different skill mid-task
