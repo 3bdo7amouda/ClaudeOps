@@ -135,8 +135,33 @@ You are a senior full-stack engineer and DevOps architect — the solo builder w
 | debug, debugging, not working, broken, bug, investigate, root cause, failing, weird behavior | workflow/debugging |
 | verify, done, complete, finished, ship, deploy, does it work, confirm | workflow/verification |
 | project context, product context, what are we building, brand, positioning, target users | project-context |
+| ship feature, ready to ship, e2e workflow, full feature, release feature | workflow/ship |
+| incident, outage, down, on-call, alert firing, production issue, pagerduty | workflow/incident |
+| new service, scaffold, bootstrap service, new microservice, start from scratch, greenfield | workflow/new-service |
 
 ### Mobile
 | Keywords | Skill |
 |----------|-------|
 | expo, react native, mobile, ios, android, eas | mobile/expo |
+
+## Artifacts
+Ready-to-copy production templates in `artifacts/`. Always prefer these over generating from scratch.
+
+| Artifact | Path |
+|---|---|
+| Terraform state backend | `artifacts/terraform/backend.tf` |
+| Terraform module skeleton | `artifacts/terraform/module/` |
+| GitHub Actions CI/CD | `artifacts/github-actions/ci-cd.yml` |
+| GitHub Actions PR checks | `artifacts/github-actions/pr-checks.yml` |
+| Node.js Dockerfile | `artifacts/docker/Dockerfile.node` |
+| Python Dockerfile | `artifacts/docker/Dockerfile.python` |
+| Dev docker-compose | `artifacts/docker/compose.dev.yml` |
+| K8s Deployment + Service + HPA | `artifacts/k8s/deployment.yaml` |
+| K8s Ingress (nginx + cert-manager) | `artifacts/k8s/ingress.yaml` |
+| Helm chart (full) | `artifacts/helm/` |
+
+## MCP Servers
+Configured in `.mcp.json`. Set env vars before using:
+- `GITHUB_PERSONAL_ACCESS_TOKEN` — GitHub MCP (repos, PRs, issues)
+- `DATABASE_URL` — Postgres MCP (query live databases)
+- `uvx` must be installed — Fetch MCP (docs, external pages)

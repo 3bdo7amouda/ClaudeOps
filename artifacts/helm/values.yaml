@@ -1,0 +1,50 @@
+replicaCount: 2
+
+image:
+  repository: PLACEHOLDER_ECR_REGISTRY/PLACEHOLDER_NAME
+  pullPolicy: Always
+  tag: "latest"
+
+service:
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  clusterIssuer: letsencrypt-prod
+  host: PLACEHOLDER_DOMAIN
+  rateLimitRps: "20"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  cpuThreshold: 70
+  memoryThreshold: 80
+
+env: {}
+  # KEY: value
+
+secretName: PLACEHOLDER_NAME-secrets
+
+probes:
+  path: /health
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  liveness:
+    initialDelaySeconds: 30
+    periodSeconds: 30
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"

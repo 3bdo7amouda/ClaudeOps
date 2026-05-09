@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: PLACEHOLDER_NAME
+  namespace: PLACEHOLDER_NAMESPACE
+  labels:
+    app: PLACEHOLDER_NAME
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: PLACEHOLDER_NAME
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0       # zero-downtime
+  template:
+    metadata:
+      labels:
+        app: PLACEHOLDER_NAME
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "PLACEHOLDER_PORT"
+        prometheus.io/path:   "/metrics"
+    spec:
+      serviceAccountName: PLACEHOLDER_NAME
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: app
+          image: PLACEHOLDER_IMAGE:PLACEHOLDER_TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: PLACEHOLDER_PORT
+              name: http
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "PLACEHOLDER_PORT"
+          envFrom:
+            - secretRef:
+                name: PLACEHOLDER_NAME-secrets
+          resources:
+            requests:
+              cpu:    "100m"
+              memory: "128Mi"
+            limits:
+              cpu:    "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: PLACEHOLDER_NAME
+  namespace: PLACEHOLDER_NAMESPACE
+  labels:
+    app: PLACEHOLDER_NAME
+spec:
+  selector:
+    app: PLACEHOLDER_NAME
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: PLACEHOLDER_NAME
+  namespace: PLACEHOLDER_NAMESPACE
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: PLACEHOLDER_NAME
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type:               Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type:               Utilization
+          averageUtilization: 80

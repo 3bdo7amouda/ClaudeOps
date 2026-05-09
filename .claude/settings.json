@@ -1,0 +1,58 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-bash.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(terraform fmt *)",
+      "Bash(terraform validate)",
+      "Bash(python3 -m py_compile *)",
+      "Bash(tsc --noEmit)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(kubectl get *)",
+      "Bash(kubectl describe *)",
+      "Bash(kubectl logs *)",
+      "Bash(helm lint *)",
+      "Bash(helm template *)",
+      "Bash(docker build *)",
+      "Bash(docker ps)",
+      "Bash(docker images)",
+      "Bash(trivy image *)",
+      "Bash(aws sts get-caller-identity)",
+      "Bash(aws s3 ls *)",
+      "Bash(aws ec2 describe-*)",
+      "Bash(npm test)",
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Bash(make *)",
+      "Bash(find . *)",
+      "Bash(grep *)",
+      "Bash(cat *)",
+      "Bash(ls *)"
+    ]
+  }
+}

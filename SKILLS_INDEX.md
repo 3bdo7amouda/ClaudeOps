@@ -84,13 +84,16 @@ Master index of all workspace skills. Claude loads the matching skill when trigg
 | Context Engineering | `skills/ai/context-engineering` | context, tokens, memory, rag, chunking, cache | Budget, U-shape attention, RAG, prompt caching, KV-cache |
 | Evaluation | `skills/ai/evaluation` | llm eval, evaluation, benchmark, judge, hallucination | Promptfoo, LLM-as-judge, regression suite, CI integration |
 
-## Workflow Skills (3) — Process Enforcement
+## Workflow Skills (6) — Process Enforcement
 
 | Skill | Path | Trigger Keywords | Description |
 |-------|------|-----------------|-------------|
 | Planning | `skills/workflow/planning` | plan, planning, how should i, let's build, architect, implement, create a system | Iron Law planning gate before implementation; task format with file paths; complexity thresholds |
 | Debugging | `skills/workflow/debugging` | debug, not working, broken, bug, root cause, failing, weird behavior, diagnose | 4-phase process: investigate → pattern → hypothesis → implement; domain-specific CLI commands |
 | Verification | `skills/workflow/verification` | verify, done, complete, finished, ship, deploy, does it work, confirm | FORBIDDEN to skip after changes; checklists by change type; completion statement format |
+| Ship Feature | `skills/workflow/ship` | ship feature, ready to ship, e2e workflow, full feature, release feature | Full shipping lifecycle: plan → implement → test → CI/CD → verify; orchestrates sub-skills per phase |
+| Incident Response | `skills/workflow/incident` | incident, outage, down, on-call, alert firing, production issue, pagerduty | Mitigate-first protocol: triage → rollback → root cause → fix → postmortem |
+| New Service | `skills/workflow/new-service` | new service, scaffold, bootstrap service, new microservice, start from scratch, greenfield | 8-phase scaffold: backend → docker → k8s/helm → CI/CD → monitoring → gitops → verify |
 
 ## Project Context (1) — Shared Foundation
 
@@ -106,7 +109,24 @@ Master index of all workspace skills. Claude loads the matching skill when trigg
 
 ---
 
-**Total: 53 skills across 9 domains**
+**Total: 56 skills across 9 domains**
+
+## Artifacts Index
+
+Ready-to-copy production templates. Copy and replace `PLACEHOLDER_*` values.
+
+| Artifact | Path | Use with skill |
+|---|---|---|
+| Terraform state backend | `artifacts/terraform/backend.tf` | `devops/infra` |
+| Terraform module skeleton | `artifacts/terraform/module/` | `devops/infra` |
+| GitHub Actions CI/CD | `artifacts/github-actions/ci-cd.yml` | `devops/cicd` |
+| GitHub Actions PR checks | `artifacts/github-actions/pr-checks.yml` | `devops/cicd` |
+| Node.js Dockerfile | `artifacts/docker/Dockerfile.node` | `devops/containers` |
+| Python Dockerfile | `artifacts/docker/Dockerfile.python` | `devops/containers` |
+| Dev docker-compose | `artifacts/docker/compose.dev.yml` | `devops/containers` |
+| K8s Deployment + Service + HPA | `artifacts/k8s/deployment.yaml` | `devops/containers` |
+| K8s Ingress (nginx + cert-manager) | `artifacts/k8s/ingress.yaml` | `devops/networking` |
+| Helm chart (full) | `artifacts/helm/` | `devops/containers` + `devops/gitops` |
 
 ## Solo Product Builder — Completeness Matrix
 

@@ -1,0 +1,147 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write    # OIDC — no static keys
+  packages: write
+
+env:
+  SERVICE_NAME: PLACEHOLDER_SERVICE_NAME
+  IMAGE:        ${{ secrets.ECR_REGISTRY }}/${{ github.event.repository.name }}
+  TAG:          ${{ github.sha }}
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck 2>/dev/null || true
+      - run: npm test -- --coverage --passWithNoTests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+
+  build:
+    name: Build & Push
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      image: ${{ env.IMAGE }}:${{ env.TAG }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ env.TAG }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+          platforms:  linux/amd64,linux/arm64
+
+  security-scan:
+    name: Security Scan
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ env.TAG }}
+          format: sarif
+          output: trivy.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "1"   # fail on CRITICAL/HIGH
+
+  deploy-staging:
+    name: Deploy → Staging
+    needs: [build, security-scan]
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER }} --region us-east-1
+
+      - name: Deploy to staging
+        run: |
+          helm upgrade --install $SERVICE_NAME ./infra/helm/$SERVICE_NAME \
+            --namespace staging \
+            --set image.tag=$TAG \
+            --set image.repository=${{ secrets.ECR_REGISTRY }}/$SERVICE_NAME \
+            --wait --timeout 5m
+
+      - name: Smoke test staging
+        run: |
+          sleep 15
+          curl -sf https://${{ secrets.STAGING_URL }}/health | jq .
+
+  deploy-prod:
+    name: Deploy → Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production       # requires manual approval in GitHub env settings
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER }} --region us-east-1
+
+      - name: Deploy to production
+        run: |
+          helm upgrade --install $SERVICE_NAME ./infra/helm/$SERVICE_NAME \
+            --namespace prod \
+            --set image.tag=$TAG \
+            --set image.repository=${{ secrets.ECR_REGISTRY }}/$SERVICE_NAME \
+            --wait --timeout 5m
+
+      - name: Verify production
+        run: |
+          sleep 15
+          curl -sf https://${{ secrets.PROD_URL }}/health | jq .
+          echo "Deployed $SERVICE_NAME:$TAG to production at $(date -u)"
