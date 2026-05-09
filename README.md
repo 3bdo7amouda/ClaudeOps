@@ -125,37 +125,6 @@ ClaudeOps/
 
 ---
 
-## Workflow Orchestration
-
-Three multi-skill workflows that chain sub-skills in a fixed order so nothing gets missed.
-
-```mermaid
-flowchart LR
-    subgraph ship["workflow/ship — feature shipping"]
-        s1["① Plan\nplanning gate"] --> s2["② Implement\nauto-detect skill"]
-        s2 --> s3["③ Test\ndev/testing"]
-        s3 --> s4["④ CI/CD\ndevops/cicd"]
-        s4 --> s5["⑤ Verify\nverification gate"]
-    end
-
-    subgraph incident["workflow/incident — on-call"]
-        i1["① Triage\nmonitoring"] --> i2["② Mitigate\nrollback first"]
-        i2 --> i3["③ Root cause\ndebugging"]
-        i3 --> i4["④ Fix + verify"]
-        i4 --> i5["⑤ Postmortem"]
-    end
-
-    subgraph newsvc["workflow/new-service — greenfield"]
-        n1["① Backend\nscaffold"] --> n2["② Docker\nbuild + run"]
-        n2 --> n3["③ K8s + Helm\nmanifests"]
-        n3 --> n4["④ CI/CD\npipeline"]
-        n4 --> n5["⑤ Monitor\n+ GitOps"]
-        n5 --> n6["⑥ Verify\nstaging"]
-    end
-```
-
----
-
 ## Live Data — MCP Servers
 
 Skills read your actual environment instead of generating from assumptions.
