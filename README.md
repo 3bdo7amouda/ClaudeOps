@@ -3,7 +3,6 @@
 ![skills](https://img.shields.io/badge/skills-56-0ea5e9?style=flat-square)
 ![domains](https://img.shields.io/badge/domains-10-6366f1?style=flat-square)
 ![mcp](https://img.shields.io/badge/MCP_servers-4-10b981?style=flat-square)
-![stack](https://img.shields.io/badge/stack-AWS_%C2%B7_K8s_%C2%B7_Node_%C2%B7_Next.js-f97316?style=flat-square)
 ![model](https://img.shields.io/badge/Claude-Sonnet_4.6-000?style=flat-square)
 
 > A Claude Code workspace for the solo DevOps engineer shipping the whole stack.
